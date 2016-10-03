@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<providers>
+    <provider class-name="com.joyent.manta.vfs.MantaFileProvider">
+        <scheme name="manta"/>
+    </provider>
+    <!--<operationProvider class-name="com.joyent.manta.vfs.MantaFileOperationsProvider">-->
+        <!--<scheme name="manta" />-->
+    <!--</operationProvider>-->
+</providers>
