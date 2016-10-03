@@ -9,12 +9,42 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <name>vfs-manta</name>
+    <description>Apache Commons VFS Manta Provider</description>
+    <url>https://github.com/joyent/commons-vfs-manta</url>
 
-    <inceptionYear>2012</inceptionYear>
+    <inceptionYear>2016</inceptionYear>
     <organization>
         <name>Joyent</name>
         <url>joyent.com</url>
     </organization>
+
+    <developers>
+        <developer>
+            <name>Elijah Zupancic</name>
+            <email>elijah@zupancic.name</email>
+            <organization>Joyent</organization>
+            <organizationUrl>joyent.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/joyent/commons-vfs-manta.git</connection>
+        <developerConnection>scm:git:git://github.com/joyent/commons-vfs-manta.git</developerConnection>
+        <url>git@github.com:joyent/commons-vfs-manta.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>github.com</system>
+        <url>https://github.com/joyent/commons-vfs-manta/issues</url>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 
     <properties>
         <checkstyle.skip>false</checkstyle.skip>
