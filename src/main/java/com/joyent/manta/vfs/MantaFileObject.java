@@ -1,6 +1,10 @@
 package com.joyent.manta.vfs;
 
-import com.joyent.manta.client.*;
+import com.joyent.manta.client.MantaClient;
+import com.joyent.manta.client.MantaHttpHeaders;
+import com.joyent.manta.client.MantaMetadata;
+import com.joyent.manta.client.MantaObject;
+import com.joyent.manta.client.MantaObjectResponse;
 import com.joyent.manta.com.google.api.client.http.HttpStatusCodes;
 import com.joyent.manta.config.ConfigContext;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
@@ -10,7 +14,13 @@ import com.joyent.manta.org.apache.commons.lang3.Validate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs2.*;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSelector;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.RandomAccessContent;
+import org.apache.commons.vfs2.Selectors;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.apache.commons.vfs2.util.RandomAccessMode;
@@ -368,7 +378,7 @@ public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
     @Override
     public void copyFrom(final FileObject file, final FileSelector selector) throws FileSystemException {
         // Note this array is presorted upon definition below
-        final FileType[] linkableTypes = new FileType[] { FileType.FILE, FileType.IMAGINARY };
+        final FileType[] linkableTypes = new FileType[] {FileType.FILE, FileType.IMAGINARY};
 
         if (Arrays.binarySearch(linkableTypes, getType()) >= 0 && file.getType().equals(FileType.FILE)
                 && file instanceof MantaFileObject && selector.equals(Selectors.SELECT_SELF)) {
