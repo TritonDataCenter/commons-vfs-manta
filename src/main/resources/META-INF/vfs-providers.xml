@@ -3,7 +3,7 @@
     <provider class-name="com.joyent.manta.vfs.MantaFileProvider">
         <scheme name="manta"/>
     </provider>
-    <!--<operationProvider class-name="com.joyent.manta.vfs.MantaFileOperationsProvider">-->
-        <!--<scheme name="manta" />-->
-    <!--</operationProvider>-->
+    <operationProvider class-name="com.joyent.manta.vfs.MantaFileOperationsProvider">
+        <scheme name="manta" />
+    </operationProvider>
 </providers>
