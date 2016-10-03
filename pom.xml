@@ -349,9 +349,6 @@
                 <configuration>
                     <forkCount>${surefire.forkCount}</forkCount>
                     <skip>${maven.test.skip}</skip>
-                    <systemPropertyVariables>
-                        <hadoop.home.dir>${project.build.directory}/hadoop_home</hadoop.home.dir>
-                    </systemPropertyVariables>
                     <useSystemClassLoader>${surefire.useSystemClassLoader}</useSystemClassLoader>
                 </configuration>
             </plugin>
@@ -360,7 +357,6 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptorId>jar-with-dependencies</descriptorId>
-                    <finalName>hadoop-manta-${project.version}</finalName>
                 </configuration>
                 <executions>
                     <execution>
