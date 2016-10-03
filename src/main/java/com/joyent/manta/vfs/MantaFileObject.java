@@ -1,9 +1,6 @@
 package com.joyent.manta.vfs;
 
-import com.joyent.manta.client.MantaClient;
-import com.joyent.manta.client.MantaMetadata;
-import com.joyent.manta.client.MantaObject;
-import com.joyent.manta.client.MantaObjectResponse;
+import com.joyent.manta.client.*;
 import com.joyent.manta.com.google.api.client.http.HttpStatusCodes;
 import com.joyent.manta.config.ConfigContext;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
@@ -13,11 +10,7 @@ import com.joyent.manta.org.apache.commons.lang3.Validate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs2.FileName;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileType;
-import org.apache.commons.vfs2.RandomAccessContent;
+import org.apache.commons.vfs2.*;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.apache.commons.vfs2.util.RandomAccessMode;
@@ -28,6 +21,7 @@ import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
@@ -369,6 +363,33 @@ public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
     @Override
     protected void doDetach() throws Exception {
         this.lastResponse = null;
+    }
+
+    @Override
+    public void copyFrom(final FileObject file, final FileSelector selector) throws FileSystemException {
+        // Note this array is presorted upon definition below
+        final FileType[] linkableTypes = new FileType[] { FileType.FILE, FileType.IMAGINARY };
+
+        if (Arrays.binarySearch(linkableTypes, getType()) >= 0 && file.getType().equals(FileType.FILE)
+                && file instanceof MantaFileObject && selector.equals(Selectors.SELECT_SELF)) {
+
+            final MantaFileObject sourceFile = (MantaFileObject)file;
+            final MantaFileSystem fs = getAbstractFileSystem();
+
+            synchronized (fs) {
+                try {
+                    final MantaClient client = fs.getClient();
+                    client.putSnapLink(path(), path(sourceFile.getName()), new MantaHttpHeaders());
+                } catch (IOException e) {
+                    final String msg = String.format("Unable to link source file [%s] to destination: %s",
+                            path(sourceFile.getName()), path());
+                    throw new FileSystemException(msg, e);
+                }
+            }
+
+        } else {
+            super.copyFrom(file, selector);
+        }
     }
 
     @Override

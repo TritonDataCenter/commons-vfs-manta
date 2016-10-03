@@ -231,6 +231,49 @@ public class MantaFileObjectTest {
                 "Attribute wasn't properly deleted");
     }
 
+    public void canCopyFileViaLink() throws IOException {
+        final String contents = "I'm a linked file";
+        final String path1 = String.format("%slinked-file-test-%s.txt", testPathPrefix,
+                UUID.randomUUID());
+        final String path2 = String.format("%slinked-file-test-%s.txt", testPathPrefix,
+                UUID.randomUUID());
+        mantaClient.put(path1, contents);
+
+        FileObject original = fsManager.resolveFile(String.format("manta://%s", path1));
+        FileObject linked = fsManager.resolveFile(String.format("manta://%s", path2));
+
+        linked.copyFrom(original, Selectors.SELECT_SELF);
+
+        String originalEtag = mantaClient.head(path1).getEtag();
+        String linkedEtag = mantaClient.head(path2).getEtag();
+
+        assertEquals(linkedEtag, originalEtag, "Etags don't match, so we don't have a link");
+        assertEquals(mantaClient.getAsString(path1),
+                mantaClient.getAsString(path2), "Content of linked file doesn't match");
+    }
+
+    public void canCopyOverwriteFileViaLink() throws IOException {
+        final String contents = "I'm a linked file";
+        final String path1 = String.format("%slinked-file-test-%s.txt", testPathPrefix,
+                UUID.randomUUID());
+        final String path2 = String.format("%slinked-file-test-%s.txt", testPathPrefix,
+                UUID.randomUUID());
+        mantaClient.put(path1, contents);
+        mantaClient.put(path2, "Different content that will be overwritten");
+
+        FileObject original = fsManager.resolveFile(String.format("manta://%s", path1));
+        FileObject linked = fsManager.resolveFile(String.format("manta://%s", path2));
+
+        linked.copyFrom(original, Selectors.SELECT_SELF);
+
+        String originalEtag = mantaClient.head(path1).getEtag();
+        String linkedEtag = mantaClient.head(path2).getEtag();
+
+        assertEquals(linkedEtag, originalEtag, "Etags don't match, so we don't have a link");
+        assertEquals(mantaClient.getAsString(path1),
+                mantaClient.getAsString(path2), "Content of linked file doesn't match");
+    }
+
     public void rootDirIsNotWritable() throws Exception {
         FileObject object = fsManager.resolveFile("manta:///testFile");
         assertFalse(object.isWriteable(), "Root directory is not writable");
