@@ -9,6 +9,7 @@ import java.util.Collection;
 
 /**
  * @author <a href="https://github.com/dekobon">Elijah Zupancic</a>
+ * @since 1.0.0
  */
 public class MantaFileOperationsProvider extends AbstractFileOperationProvider {
     public MantaFileOperationsProvider() {

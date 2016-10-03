@@ -4,6 +4,7 @@ import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.client.MantaMetadata;
 import com.joyent.manta.client.MantaObject;
 import com.joyent.manta.client.MantaObjectResponse;
+import com.joyent.manta.com.google.api.client.http.HttpStatusCodes;
 import com.joyent.manta.config.ConfigContext;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.org.apache.commons.lang3.ObjectUtils;
@@ -12,7 +13,11 @@ import com.joyent.manta.org.apache.commons.lang3.Validate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs2.*;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.RandomAccessContent;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.apache.commons.vfs2.util.RandomAccessMode;
@@ -31,13 +36,29 @@ import static com.joyent.manta.client.MantaClient.SEPARATOR;
 import static java.util.stream.Collectors.toMap;
 
 /**
+ * Manta specific implementation of {@link FileObject}. This class provides a
+ * majority of the operations available via VFS.
+ *
  * @author <a href="https://github.com/dekobon">Elijah Zupancic</a>
+ * @since 1.0.0
  */
 public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
-    private static Log LOG = LogFactory.getLog(MantaFileObject.class);
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(MantaFileObject.class);
 
+    /**
+     * Last HEAD response from the Manta API that is reused when the object is attached.
+     */
     private MantaObject lastResponse = null;
 
+    /**
+     * Creates a new instance for the specified filename and filesystem.
+     *
+     * @param name Filename object pointing to a file that may or may not exist
+     * @param fs Filesystem object
+     */
     public MantaFileObject(final AbstractFileName name, final MantaFileSystem fs) {
         super(name, fs);
     }
@@ -63,7 +84,7 @@ public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
     }
 
     @Override
-    protected OutputStream doGetOutputStream(boolean bAppend) throws Exception {
+    protected OutputStream doGetOutputStream(final boolean bAppend) throws Exception {
         if (bAppend) {
             throw new FileSystemException("vfs.provider/write-append-not-supported.error", getName());
         }
@@ -101,7 +122,7 @@ public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
             if (isRoot()) {
                 final String homeDir = fs.getMantaConfig().getMantaHomeDirectory();
                 final String stripped = StringUtils.stripStart(homeDir, SEPARATOR);
-                return new String[] { stripped };
+                return new String[] {stripped};
             }
 
             final MantaClient client = fs.getClient();
@@ -129,7 +150,7 @@ public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
                 if (isRoot()) {
                     final String homeDir = fs.getMantaConfig().getMantaHomeDirectory();
                     final MantaFileName fileName = new MantaFileName(homeDir, FileType.FOLDER);
-                    return new FileObject[] { new MantaFileObject(fileName, fs) } ;
+                    return new FileObject[] {new MantaFileObject(fileName, fs)};
                 }
 
                 final MantaClient client = fs.getClient();
@@ -228,8 +249,8 @@ public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
                 return false;
             }
 
-            if (FilenameUtils.equalsNormalized(path, publicDir) ||
-                    FilenameUtils.equalsNormalized(path, storDir)) {
+            if (FilenameUtils.equalsNormalized(path, publicDir)
+                    || FilenameUtils.equalsNormalized(path, storDir)) {
                 return true;
             }
         }
@@ -336,7 +357,7 @@ public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
             }
         } catch (MantaClientHttpResponseException e) {
             // Indicate that files don't exist when we hit a HTTP 404
-            if (e.getStatusCode() == 404) {
+            if (e.getStatusCode() == HttpStatusCodes.STATUS_CODE_NOT_FOUND) {
                 this.lastResponse = null;
                 return;
             }
@@ -371,6 +392,13 @@ public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
         return getName().getPath().equals(SEPARATOR);
     }
 
+    /**
+     * Method that does a HTTP HEAD against the Manta API for the current file
+     * path.
+     *
+     * @return the response header object
+     * @throws IOException when HTTP HEAD fails
+     */
     public MantaObjectResponse head() throws IOException {
         final MantaFileSystem fs = getAbstractFileSystem();
 
@@ -380,10 +408,19 @@ public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
         }
     }
 
+    /**
+     * Gets the plain-text full path to the current file.
+     * @return path to the current file
+     */
     protected String path() {
         return path(getName());
     }
 
+    /**
+     * Gets the plain-text full path to a file.
+     * @param vfsFileName VFS file object to parse path from
+     * @return path to the file specified
+     */
     protected String path(final FileName vfsFileName) {
         return FilenameUtils.normalize(vfsFileName.getPath());
     }

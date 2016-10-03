@@ -14,9 +14,15 @@ import java.util.Map;
 import static com.joyent.manta.config.MapConfigContext.*;
 
 /**
+ * Manta specific implementation of a VFS configuration builder.
+ *
  * @author <a href="https://github.com/dekobon">Elijah Zupancic</a>
+ * @since 1.0.0
  */
 public class MantaFileSystemConfigBuilder extends FileSystemConfigBuilder {
+    /**
+     * Create new instance.
+     */
     public MantaFileSystemConfigBuilder() {
     }
 
@@ -303,6 +309,11 @@ public class MantaFileSystemConfigBuilder extends FileSystemConfigBuilder {
         return opts;
     }
 
+    /**
+     * Converts a VFS configuration to a Manta configuration object.
+     * @param opts VFS options to be converted
+     * @return a Manta configuration object populated with the VFS options
+     */
     public ConfigContext exportContext(final FileSystemOptions opts) {
         final Map<String, Object> properties = new HashMap<>(ALL_PROPERTIES.length);
 

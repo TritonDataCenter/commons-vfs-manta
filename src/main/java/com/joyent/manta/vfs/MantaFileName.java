@@ -6,15 +6,34 @@ import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 
 /**
+ * Manta specific implementation of {@link AbstractFileName}.
+ *
  * @author <a href="https://github.com/dekobon">Elijah Zupancic</a>
+ * @since 1.0.0
  */
 public class MantaFileName extends AbstractFileName {
+    /**
+     * Hardcoded name of scheme that is made available when getScheme can't be accessed.
+     */
     public static final String SCHEME = "manta";
 
+    /**
+     * Creates a new instance with the specified path and file type.
+     *
+     * @param absPath absolute path to file on Manta
+     * @param type type of file (e.g. directory or file)
+     */
     public MantaFileName(final String absPath, final FileType type) {
         this(SCHEME, absPath, type);
     }
 
+    /**
+     * Creates a new instance with the specified scheme, path and file type.
+     *
+     * @param scheme scheme for this file - this should always be "manta"
+     * @param absPath absolute path to file on Manta
+     * @param type type of file (e.g. directory or file)
+     */
     public MantaFileName(final String scheme, final String absPath, final FileType type) {
         super(scheme, absPath, type);
     }

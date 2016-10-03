@@ -5,17 +5,36 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.provider.AbstractRandomAccessContent;
 import org.apache.commons.vfs2.util.RandomAccessMode;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
+ * Manta specific implementation of {@link org.apache.commons.vfs2.RandomAccessContent}.
+ * This class provides an interface to allow for random file reads from a remote file
+ * on Manta.
+ *
  * @author <a href="https://github.com/dekobon">Elijah Zupancic</a>
+ * @since 1.0.0
  */
 public class MantaRandomAccessContent extends AbstractRandomAccessContent
         implements AutoCloseable {
-    public static int EOF = -1;
+    /**
+     * Constant indicated the end of a file has been reached.
+     */
+    public static final int EOF = -1;
 
+    /**
+     * Backing instance of {@link java.nio.channels.SeekableByteChannel} that
+     * is provided by the Manta SDK.
+     */
     private MantaSeekableByteChannel channel;
 
+    /**
+     * Create new instance backed by Java NIO random file access implementation.
+     * @param channel Manta seekable byte channel as returned from Manta driver
+     */
     public MantaRandomAccessContent(final MantaSeekableByteChannel channel) {
         super(RandomAccessMode.READ);
 
@@ -124,8 +143,10 @@ public class MantaRandomAccessContent extends AbstractRandomAccessContent
     public short readShort() throws IOException {
         int ch1 = this.channel.read();
         int ch2 = this.channel.read();
-        if ((ch1 | ch2) < 0)
+        if ((ch1 | ch2) < 0) {
             throw new EOFException();
+        }
+
         return (short)((ch1 << 8) + (ch2 << 0));
     }
 
@@ -144,8 +165,11 @@ public class MantaRandomAccessContent extends AbstractRandomAccessContent
     public char readChar() throws IOException {
         int ch1 = this.channel.read();
         int ch2 = this.channel.read();
-        if ((ch1 | ch2) < 0)
+
+        if ((ch1 | ch2) < 0) {
             throw new EOFException();
+        }
+
         return (char)((ch1 << 8) + (ch2 << 0));
     }
 
@@ -155,8 +179,11 @@ public class MantaRandomAccessContent extends AbstractRandomAccessContent
         int ch2 = this.channel.read();
         int ch3 = this.channel.read();
         int ch4 = this.channel.read();
-        if ((ch1 | ch2 | ch3 | ch4) < 0)
+
+        if ((ch1 | ch2 | ch3 | ch4) < 0) {
             throw new EOFException();
+        }
+
         return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
     }
 
@@ -178,5 +205,13 @@ public class MantaRandomAccessContent extends AbstractRandomAccessContent
     @Override
     public String readUTF() throws IOException {
         return DataInputStream.readUTF(this);
+    }
+
+    /**
+     * Returns reference to backing NIO random file access object.
+     * @return Manta driver specific NIO random file access object
+     */
+    public MantaSeekableByteChannel getChannel() {
+        return channel;
     }
 }
