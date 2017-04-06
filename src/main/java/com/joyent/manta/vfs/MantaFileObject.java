@@ -1,13 +1,12 @@
 package com.joyent.manta.vfs;
 
 import com.joyent.manta.client.MantaClient;
-import com.joyent.manta.client.MantaHttpHeaders;
 import com.joyent.manta.client.MantaMetadata;
 import com.joyent.manta.client.MantaObject;
 import com.joyent.manta.client.MantaObjectResponse;
-import com.joyent.manta.com.google.api.client.http.HttpStatusCodes;
 import com.joyent.manta.config.ConfigContext;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
+import com.joyent.manta.http.MantaHttpHeaders;
 import com.joyent.manta.org.apache.commons.lang3.ObjectUtils;
 import com.joyent.manta.org.apache.commons.lang3.StringUtils;
 import com.joyent.manta.org.apache.commons.lang3.Validate;
@@ -34,7 +33,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
-
 
 import static com.joyent.manta.client.MantaClient.SEPARATOR;
 import static java.util.stream.Collectors.toMap;
@@ -350,6 +348,7 @@ public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
     }
 
     @Override
+    @SuppressWarnings("MagicNumber")
     protected void doAttach() throws Exception {
         if (isRoot()) {
             return;
@@ -361,7 +360,7 @@ public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
             }
         } catch (MantaClientHttpResponseException e) {
             // Indicate that files don't exist when we hit a HTTP 404
-            if (e.getStatusCode() == HttpStatusCodes.STATUS_CODE_NOT_FOUND) {
+            if (e.getStatusCode() == 404) {
                 this.lastResponse = null;
                 return;
             }

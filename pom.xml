@@ -68,7 +68,7 @@
 
         <!-- Dependency versions -->
         <dependency.commons-vfs.version>2.1</dependency.commons-vfs.version>
-        <dependency.manta-client.version>2.4.3</dependency.manta-client.version>
+        <dependency.manta-client.version>3.0.0</dependency.manta-client.version>
         <dependency.slfj.version>1.7.21</dependency.slfj.version>
         <dependency.commons-io.version>2.5</dependency.commons-io.version>
         <dependency.checkstyle.version>6.17</dependency.checkstyle.version>

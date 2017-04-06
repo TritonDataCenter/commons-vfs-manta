@@ -10,8 +10,6 @@ import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileSystem;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.Collection;
 
 /**
@@ -39,7 +37,7 @@ public class MantaFileSystem extends AbstractFileSystem {
     private final ConfigContext mantaConfig;
 
     /**
-     * Reference to MAnta driver object.
+     * Reference to Manta driver object.
      */
     private final MantaClient client;
 
@@ -87,12 +85,7 @@ public class MantaFileSystem extends AbstractFileSystem {
      * @return Manta driver instance
      */
     protected MantaClient createClient(final ConfigContext config) {
-        try {
-            return new MantaClient(config);
-        } catch (IOException e) {
-            final String msg = "Error creating Manta client";
-            throw new UncheckedIOException(msg, e);
-        }
+        return new MantaClient(config);
     }
 
     @Override

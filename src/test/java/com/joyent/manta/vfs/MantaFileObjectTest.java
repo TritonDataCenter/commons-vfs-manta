@@ -1,7 +1,6 @@
 package com.joyent.manta.vfs;
 
 import com.joyent.manta.client.*;
-import com.joyent.manta.exception.MantaCryptoException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.vfs2.*;
@@ -45,7 +44,7 @@ public class MantaFileObjectTest {
     }
 
     @AfterClass
-    public void afterClass() throws IOException, MantaCryptoException {
+    public void afterClass() throws IOException {
         if (mantaClient != null) {
             mantaClient.deleteRecursive(testPathPrefix);
         }

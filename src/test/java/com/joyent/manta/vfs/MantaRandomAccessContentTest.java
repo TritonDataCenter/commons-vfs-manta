@@ -2,7 +2,6 @@ package com.joyent.manta.vfs;
 
 import com.joyent.manta.client.MantaClient;
 import com.joyent.manta.client.MantaSeekableByteChannel;
-import com.joyent.manta.exception.MantaCryptoException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.vfs2.FileSystemManager;
@@ -41,7 +40,7 @@ public class MantaRandomAccessContentTest {
     }
 
     @AfterClass
-    public void afterClass() throws IOException, MantaCryptoException {
+    public void afterClass() throws IOException {
         if (mantaClient != null) {
             mantaClient.deleteRecursive(testPathPrefix);
         }

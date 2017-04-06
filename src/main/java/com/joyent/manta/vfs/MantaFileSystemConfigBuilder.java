@@ -181,25 +181,6 @@ public class MantaFileSystemConfigBuilder extends FileSystemConfigBuilder {
     }
 
     /**
-     * Sets the class name of the HttpTransport implementation to use. Use the
-     * strings ApacheHttpTransport, NetHttpTransport or MockHttpTransport to use the
-     * included implementations. If the value is not one of those three - then we
-     * default to the ApacheHttpTransport method.
-     *
-     * @param opts file system options object to populate with config
-     * @param httpTransport Typically 'ApacheHttpTransport' or 'NetHttpTransport'
-     * @return the current instance of {@link MantaFileSystemConfigBuilder}
-     */
-    public MantaFileSystemConfigBuilder setHttpTransport(final FileSystemOptions opts,
-                                                         final String httpTransport) {
-        if (httpTransport != null) {
-            setParam(opts, MANTA_HTTP_TRANSPORT_KEY, httpTransport);
-        }
-
-        return this;
-    }
-
-    /**
      * Set the supported TLS protocols.
      *
      * @param opts file system options object to populate with config
@@ -265,21 +246,189 @@ public class MantaFileSystemConfigBuilder extends FileSystemConfigBuilder {
     }
 
     /**
-     * Sets the time in milliseconds to cache HTTP signature headers.
+     * Set the size of buffer in bytes to use to buffer streams of HTTP data.
      *
      * @param opts file system options object to populate with config
-     * @param signatureCacheTTL time in milliseconds to cache HTTP signature headers
+     * @param bufferSize HTTP buffer size
      * @return the current instance of {@link MantaFileSystemConfigBuilder}
      */
-    public MantaFileSystemConfigBuilder setSignatureCacheTTL(final FileSystemOptions opts,
-                                                             final Integer signatureCacheTTL) {
-        if (signatureCacheTTL != null) {
-            setParam(opts, MANTA_SIGS_CACHE_TTL_KEY, signatureCacheTTL);
+    public MantaFileSystemConfigBuilder setHttpBufferSize(final FileSystemOptions opts,
+                                                          final Integer bufferSize) {
+        if (bufferSize != null) {
+            setParam(opts, MANTA_HTTP_BUFFER_SIZE_KEY, bufferSize);
         }
+
         return this;
     }
 
+    /**
+     * Set the in milliseconds to wait to see if a TCP socket has timed out.
+     *
+     * @param opts file system options object to populate with config
+     * @param timeout socket timeout time in milliseconds
+     * @return the current instance of {@link MantaFileSystemConfigBuilder}
+     */
+    public MantaFileSystemConfigBuilder setTcpSocketTimeout(final FileSystemOptions opts,
+                                                            final Integer timeout) {
+        if (timeout != null) {
+            setParam(opts, MANTA_TCP_SOCKET_TIMEOUT_KEY, timeout);
+        }
 
+        return this;
+    }
+
+    /**
+     * When set to true when we verify the uploaded file's checksum against the
+     * server's checksum (MD5).
+     *
+     * @param opts file system options object to populate with config
+     * @param verifyEnabled true if we verify object checksums against the server
+     * @return the current instance of {@link MantaFileSystemConfigBuilder}
+     */
+    public MantaFileSystemConfigBuilder setVerifyUploads(final FileSystemOptions opts,
+                                                         final Boolean verifyEnabled) {
+        if (verifyEnabled != null) {
+            setParam(opts, MANTA_VERIFY_UPLOADS_KEY, verifyEnabled);
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets the number of bytes to read into memory for a streaming upload before
+     * deciding if we want to load it in memory before send it.
+     *
+     * @param opts file system options object to populate with config
+     * @param bufferSize number of bytes in the buffer
+     * @return the current instance of {@link MantaFileSystemConfigBuilder}
+     */
+    public MantaFileSystemConfigBuilder setUploadBufferSize(final FileSystemOptions opts,
+                                                            final Integer bufferSize) {
+        if (bufferSize != null) {
+            setParam(opts, MANTA_UPLOAD_BUFFER_SIZE_KEY, bufferSize);
+        }
+
+        return this;
+    }
+
+    /**
+     * When set to true when client-side encryption is enabled.
+     *
+     * @param opts file system options object to populate with config
+     * @param encryptionEnabled flag enabling client-side encryption
+     * @return the current instance of {@link MantaFileSystemConfigBuilder}
+     */
+    public MantaFileSystemConfigBuilder setClientEncryptionEnabled(final FileSystemOptions opts,
+                                                                   final Boolean encryptionEnabled) {
+        if (encryptionEnabled != null) {
+            setParam(opts, MANTA_CLIENT_ENCRYPTION_ENABLED_KEY, encryptionEnabled);
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets a plain-text identifier for the encryption key used. It doesn't
+     * contain whitespace and is encoded in US-ASCII.
+     *
+     * @see ConfigContext#getEncryptionKeyId()
+     * @param opts file system options object to populate with config
+     * @param keyId the unique identifier of the key used for encryption
+     * @return the current instance of {@link MantaFileSystemConfigBuilder}
+     */
+    public MantaFileSystemConfigBuilder setEncryptionKeyId(final FileSystemOptions opts,
+                                                           final String keyId) {
+        if (keyId != null) {
+            setParam(opts, MANTA_ENCRYPTION_KEY_ID_KEY, keyId);
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets the algorithm name in the format of <code>cipher/mode/padding state</code>.
+     *
+     * @see com.joyent.manta.client.crypto.SupportedCiphersLookupMap
+     * @param opts file system options object to populate with config
+     * @param algorithm algorithm name
+     * @return the current instance of {@link MantaFileSystemConfigBuilder}
+     */
+    public MantaFileSystemConfigBuilder setEncryptionAlgorithm(final FileSystemOptions opts,
+                                                               final String algorithm) {
+        if (algorithm != null) {
+            setParam(opts, MANTA_ENCRYPTION_ALGORITHM_KEY, algorithm);
+        }
+
+        return this;
+    }
+
+    /**
+     * When set to true, downloading unencrypted files is allowed in encryption
+     * mode.
+     *
+     * @param opts file system options object to populate with config
+     * @param permitUnencryptedDownloads flag enabling unencrypted downloads
+     * @return the current instance of {@link MantaFileSystemConfigBuilder}
+     */
+    public MantaFileSystemConfigBuilder setPermitUnencryptedDownloads(final FileSystemOptions opts,
+                                                                      final Boolean permitUnencryptedDownloads) {
+        if (permitUnencryptedDownloads != null) {
+            setParam(opts, MANTA_PERMIT_UNENCRYPTED_DOWNLOADS_KEY, permitUnencryptedDownloads);
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets the authentication mode to use when doing client-side encryption.
+     *
+     * @see com.joyent.manta.config.EncryptionAuthenticationMode
+     * @param opts file system options object to populate with config
+     * @param authMode specifies if we are in strict ciphertext authentication mode or not
+     * @return the current instance of {@link MantaFileSystemConfigBuilder}
+     */
+    public MantaFileSystemConfigBuilder setEncryptionAuthMode(final FileSystemOptions opts,
+                                                              final String authMode) {
+        if (authMode != null) {
+            setParam(opts, MANTA_ENCRYPTION_AUTHENTICATION_MODE_KEY, authMode);
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets the path to the private encryption key on the filesystem (can't
+     * be used if private key bytes is not null).
+     *
+     * @param opts file system options object to populate with config
+     * @param keyPath path to encryption key file
+     * @return the current instance of {@link MantaFileSystemConfigBuilder}
+     */
+    public MantaFileSystemConfigBuilder setEncryptionKeyPath(final FileSystemOptions opts,
+                                                             final String keyPath) {
+        if (keyPath != null) {
+            setParam(opts, MANTA_ENCRYPTION_PRIVATE_KEY_PATH_KEY, keyPath);
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets the private encryption key data (can't be used if private key path
+     * is not null).
+     *
+     * @param opts file system options object to populate with config
+     * @param keyBytes private key as a byte array
+     * @return the current instance of {@link MantaFileSystemConfigBuilder}
+     */
+    public MantaFileSystemConfigBuilder setEncryptionKeyBytes(final FileSystemOptions opts,
+                                                              final byte[] keyBytes) {
+        if (keyBytes != null) {
+            setParam(opts, MANTA_ENCRYPTION_PRIVATE_KEY_BYTES_KEY, keyBytes);
+        }
+
+        return this;
+    }
 
     /**
      * Imports the provided {@link ConfigContext} object into the config builder's
@@ -293,18 +442,31 @@ public class MantaFileSystemConfigBuilder extends FileSystemConfigBuilder {
                                            final FileSystemOptions opts) {
         setMantaURL(opts, config.getMantaURL());
         setMantaUser(opts, config.getMantaUser());
+        setMantaKeyId(opts, config.getMantaKeyId());
         setMantaKeyPath(opts, config.getMantaKeyPath());
+        setPrivateKeyContent(opts, config.getPrivateKeyContent());
+        setPassword(opts, config.getPassword());
         setTimeout(opts, config.getTimeout());
         setRetries(opts, config.getRetries());
         setMaximumConnections(opts, config.getMaximumConnections());
-        setPrivateKeyContent(opts, config.getPrivateKeyContent());
-        setPassword(opts, config.getPassword());
-        setHttpTransport(opts, config.getHttpTransport());
+        setHttpBufferSize(opts, config.getHttpBufferSize());
         setHttpsProtocols(opts, config.getHttpsProtocols());
         setHttpsCiphers(opts, config.getHttpsCipherSuites());
         setNoAuth(opts, config.noAuth());
         setDisableNativeSignatures(opts, config.disableNativeSignatures());
-        setSignatureCacheTTL(opts, config.getSignatureCacheTTL());
+        setTcpSocketTimeout(opts, config.getTcpSocketTimeout());
+        setVerifyUploads(opts, config.verifyUploads());
+        setUploadBufferSize(opts, config.getUploadBufferSize());
+
+        if (config.isClientEncryptionEnabled()) {
+            setClientEncryptionEnabled(opts, config.isClientEncryptionEnabled());
+            setEncryptionKeyId(opts, config.getEncryptionKeyId());
+            setEncryptionAlgorithm(opts, config.getEncryptionAlgorithm());
+            setPermitUnencryptedDownloads(opts, config.permitUnencryptedDownloads());
+            setEncryptionAuthMode(opts, config.getEncryptionAuthenticationMode().toString());
+            setEncryptionKeyPath(opts, config.getEncryptionPrivateKeyPath());
+            setEncryptionKeyBytes(opts, config.getEncryptionPrivateKeyBytes());
+        }
 
         return opts;
     }
