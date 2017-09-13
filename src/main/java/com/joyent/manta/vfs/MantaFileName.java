@@ -1,9 +1,10 @@
 package com.joyent.manta.vfs;
 
-import com.joyent.manta.org.apache.commons.lang3.Validate;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.provider.AbstractFileName;
+
+import java.util.Objects;
 
 /**
  * Manta specific implementation of {@link AbstractFileName}.
@@ -40,8 +41,12 @@ public class MantaFileName extends AbstractFileName {
 
     @Override
     public FileName createName(final String absPath, final FileType type) {
-        Validate.notBlank(absPath, "File path must not be blank or null");
-        Validate.notNull(type, "File type must be specified");
+        Objects.requireNonNull(type, "File type must be specified");
+        Objects.requireNonNull(absPath, "File path must not be null");
+
+        if (absPath.trim().isEmpty()) {
+            throw new IllegalArgumentException("File path must not be blank");
+        }
 
         return new MantaFileName(getScheme(), absPath, type);
     }

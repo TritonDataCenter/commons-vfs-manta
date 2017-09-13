@@ -1,7 +1,7 @@
 package com.joyent.manta.vfs;
 
-import com.joyent.manta.org.apache.commons.lang3.ObjectUtils;
-import com.joyent.manta.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileSystemException;

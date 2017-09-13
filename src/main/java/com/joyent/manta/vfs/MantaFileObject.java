@@ -7,10 +7,9 @@ import com.joyent.manta.client.MantaObjectResponse;
 import com.joyent.manta.config.ConfigContext;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.http.MantaHttpHeaders;
-import com.joyent.manta.org.apache.commons.lang3.ObjectUtils;
-import com.joyent.manta.org.apache.commons.lang3.StringUtils;
-import com.joyent.manta.org.apache.commons.lang3.Validate;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileName;
@@ -33,6 +32,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.joyent.manta.client.MantaClient.SEPARATOR;
 import static java.util.stream.Collectors.toMap;
@@ -262,7 +262,7 @@ public class MantaFileObject extends AbstractFileObject<MantaFileSystem> {
 
     @Override
     public boolean canRenameTo(final FileObject newfile) {
-        Validate.notNull(newfile, "File object must be present");
+        Objects.requireNonNull(newfile, "File object must be present");
 
         // we currently only support renaming files at this time
         try {
